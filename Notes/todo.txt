@@ -1,7 +1,7 @@
 TODO:
--- create p5 sketch
--- create title page
--- create main page
+DONE -- create p5 sketch 
+DONE -- create title page
+DONE -- create main page
 -- create button to open menu page
 -- create menu page
 
