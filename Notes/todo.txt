@@ -1,0 +1,10 @@
+TODO:
+-- create p5 sketch
+-- create title page
+-- create main page
+-- create button to open menu page
+-- create menu page
+
+-- create functioning countdown timer with -/--/+/++ and start (then a cancel)
+-- create foods page to switch to different food and retain this update in main page
+-- colorway changes based on click in settings
