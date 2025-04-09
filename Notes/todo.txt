@@ -7,8 +7,8 @@ DONE -- create menu page
 
 -- create functioning countdown timer with -/--/+/++ and start (then a cancel)
 
+--
+
 -- create foods page to switch to different food and retain this update in main page
-
-
 
 -- colorway changes based on click in settings

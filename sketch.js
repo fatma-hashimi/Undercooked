@@ -7,6 +7,9 @@ let cancelTimerButton;
 let menuButton;
 let exitMenuButton;
 let returnToTitleButton;
+let selectFoodButton;
+
+// let titleBeginButton, startTimerButton,increaseTimerButton, decreaseTimerButton, cancelTimerButton, menuButton, exitMenuButton, returnToTitleButton;
 
 
 // ----------------------------------- Pages
@@ -15,6 +18,7 @@ let homePage = false;
 let menuPage = false;
 let runningPage = false;
 let endPage = false;
+let foodSelectionPage = false;
 
 // ----------------------------------- Setup
 
@@ -49,7 +53,7 @@ function createButtons() {
 
   // START TIMER
   startTimerButton = createImg('Media/toast.png', 'Toast');
-  startTimerButton.position(160, 250);
+  startTimerButton.position(160, 300);
   startTimerButton.size(130, 130);
   startTimerButton.mouseClicked(() => {
     runningPage = true;
@@ -58,24 +62,24 @@ function createButtons() {
   });
 
   // DECREASE TIMER
-  decreaseTimerButton = createImg('Media/cereal.png', 'Toast');
+  decreaseTimerButton = createImg('Media/cereal.png', 'cereal');
   decreaseTimerButton.position(30, 140);
-  decreaseTimerButton.size(130, 130);
+  decreaseTimerButton.size(100, 100);
   decreaseTimerButton.mouseClicked(() => {
     console.log("-5 minutes");
   });
 
   // INCREASE TIMER
-  increaseTimerButton = createImg('Media/cereal.png', 'Toast');
-  increaseTimerButton.position(290, 140);
-  increaseTimerButton.size(130, 130);
+  increaseTimerButton = createImg('Media/cereal.png', 'cereal');
+  increaseTimerButton.position(310, 140);
+  increaseTimerButton.size(100, 100);
   increaseTimerButton.mouseClicked(() => {
     console.log("+5 minutes");
   });
 
   // CANCEL TIMER
-  cancelTimerButton = createImg('Media/cereal.png', 'Toast');
-  cancelTimerButton.position(160, 250);
+  cancelTimerButton = createImg('Media/cereal.png', 'cereal');
+  cancelTimerButton.position(160, 300);
   cancelTimerButton.size(130, 130);
   cancelTimerButton.mouseClicked(() => {
     runningPage = false;
@@ -83,8 +87,8 @@ function createButtons() {
     console.log("timer cancelled");
   });
 
-  // MENU
-  menuButton = createImg('Media/cereal.png', 'Toast');
+  // MENU BUTTONS
+  menuButton = createImg('Media/cereal.png', 'cereal');
   menuButton.position(10, 10);
   menuButton.size(70, 70);
   menuButton.mouseClicked(() => {
@@ -93,13 +97,33 @@ function createButtons() {
     menuPage = true;
   });
 
-  exitMenuButton = createImg('Media/cereal.png', 'Toast');
+  exitMenuButton = createImg('Media/cereal.png', 'cereal');
   exitMenuButton.position(10, 10);
   exitMenuButton.size(70, 70);
   exitMenuButton.mouseClicked(() => {
     console.log("exited menu page");
     homePage = true;
     menuPage = false;
+  });
+
+  // MENU OPTION BUTTONS
+
+  returnToTitleButton = createImg('Media/toast.png', 'Toast')
+  returnToTitleButton.position(100, 20);
+  returnToTitleButton.size(70, 70);
+  returnToTitleButton.mouseClicked(() => {
+    console.log("entered title page");
+    titlePage = true;
+    menuPage = false;
+  });
+
+  selectFoodButton = createImg('Media/toast.png', 'Toast')
+  selectFoodButton.position(100, 90);
+  selectFoodButton.size(70, 70);
+  selectFoodButton.mouseClicked(() => {
+    console.log("entered title page");
+    menuPage = false;
+    foodSelectionPage = true;
   });
 
 }
@@ -112,6 +136,8 @@ function hideAllButtons() {
   cancelTimerButton.hide();
   menuButton.hide();
   exitMenuButton.hide();
+  returnToTitleButton.hide();
+  selectFoodButton.hide();
 }
 
 // ----------------------------------- Page Changer
@@ -136,6 +162,8 @@ function pageChanger() {
 
   if (menuPage) {
     exitMenuButton.show();
+    returnToTitleButton.show();
+    selectFoodButton.show();
   }
 
 }
