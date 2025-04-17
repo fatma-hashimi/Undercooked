@@ -12,9 +12,13 @@ let restartTimerHomeButton;
 
 // ----------------------------------- Timer Variables
 let timeSecond = 600;
+// tracks recent changes to timer duration
 let lastTimeSecond = 600;
+// bool flag to track if countdown is running
 let countdownActive = false;
+// time between each interval for countdown (1 second)
 const interval = 1000;
+// bool flaf to track if countdown is canceled
 let cancelCountdown = false;
 let targetTime;
 
@@ -28,9 +32,11 @@ let foodSelectionPage = false;
 
 // ----------------------------------- Background Image
 let titlePageBG;
+let framedBG;
 
 function preload() {
-  titlePageBG = loadImage('Media/titlePageBG.png');
+  titlePageBG = loadImage('Media/titlePageBG.png'); // Load the title page background
+  framedBG = loadImage('Media/framedBG.png'); // Load the default background for other pages
 }
 
 // ----------------------------------- Setup
@@ -40,6 +46,7 @@ function setup() {
   imageMode(CENTER);
   textSize(32);
   textAlign(CENTER, CENTER);
+  textFont('Helvetica');
 
   createButtons();
 }
@@ -47,13 +54,7 @@ function setup() {
 // ----------------------------------- Draw
 
 function draw() {
-  if (titlePage) {
-    background(220); // Clear the canvas with a default background color
-    image(titlePageBG, width / 2, height / 2); // Draw the image at the center of the canvas
-  } else {
-    background(220); // Default background for other pages
-  }
-
+  pageChanger();
   if (homePage) {
     displayTime(lastTimeSecond);
   }
@@ -64,8 +65,6 @@ function draw() {
     }
     displayTime();
   }
-
-  pageChanger();
 }
 
 // ----------------------------------- Button Functions
@@ -125,8 +124,8 @@ function createButtons() {
 
   // CANCEL TIMER
   cancelTimerButton = createImg('Media/cancelTimerImage.png', 'cancelTimer');
-  cancelTimerButton.position(190, 320);
-  cancelTimerButton.size(70, 50);
+  cancelTimerButton.position(190, 340);
+  cancelTimerButton.size(78, 27);
   cancelTimerButton.mouseClicked(() => {
     runningPage = false;
     homePage = true;
@@ -138,7 +137,7 @@ function createButtons() {
 
   // MENU BUTTONS
   menuButton = createImg('Media/menuEnterButton.png', 'menu');
-  menuButton.position(15, 15);
+  menuButton.position(35, 35);
   menuButton.size(24, 24);
   menuButton.mouseClicked(() => {
     console.log("entered menu page");
@@ -147,7 +146,7 @@ function createButtons() {
   });
 
   exitMenuButton = createImg('Media/menuExitButton.png', 'exitMenu');
-  exitMenuButton.position(15, 15);
+  exitMenuButton.position(35, 35);
   exitMenuButton.size(24, 24);
   exitMenuButton.mouseClicked(() => {
     console.log("exited menu page");
@@ -204,7 +203,12 @@ function pageChanger() {
   hideAllButtons();
 
   if (titlePage) {
+    background(225);
+    image(titlePageBG, width / 2, height / 2);
     titleBeginButton.show();
+  } else {
+    background(255);
+    image(framedBG, width / 2, height / 2);
   }
 
   if (homePage) {
@@ -213,10 +217,10 @@ function pageChanger() {
     decreaseTimerButton.show();
     menuButton.show();
 
-    // Display toast image in the center of the canvas
     const toastImage = createImg('Media/toast1.png', 'ToastImage');
-    toastImage.position(width / 2 - 64, height / 2 - 64); // Center the image
-    toastImage.size(128, 128); // Set the size of the image
+    // moving image to center
+    toastImage.position(width / 2 - 64, height / 2 - 128);
+    toastImage.size(128, 128);
   }
 
   if (runningPage) {
@@ -237,50 +241,58 @@ function pageChanger() {
 // ----------------------------------- Timer Functions
 
 function startCountdown() {
-  if (countdownActive) return; // Prevent multiple intervals
-  countdownActive = true; // Set the countdown as active
-  cancelCountdown = false; // Ensure the countdown is not canceled
+  // needed to prevent multiple countdowns from starting
+  if (countdownActive) return;
+  countdownActive = true;
+  cancelCountdown = false;
 
-  targetTime = Date.now() + timeSecond * 1000; // Calculate the target end time
+  // starts countdown here
+  // using Date.now so that it knows to end when it reaches a certain time using reference as of January 1, 1970 (lol, only way to make it not be frameRate based. since dropping frames means inaccurate intervals)
+  targetTime = Date.now() + timeSecond * 1000;
   console.log(`Countdown started. Target time: ${new Date(targetTime).toLocaleTimeString()}`);
-  step(); // Start the countdown loop
+  step(); // !!! function that does more math
 }
 
 function step() {
+
+  // if cancel button was pressed and timer doesnt reach 0
   if (cancelCountdown) {
-    console.log("Countdown canceled");
-    cancelCountdown = false; // Reset the flag for future use
-    countdownActive = false; // Reset the countdown flag
-    return; // Stop further execution
+    console.log("Timer canceled");
+    cancelCountdown = false;
+    countdownActive = false;
+    return;
   }
 
+  // prevents negative countdown
   const now = Date.now();
-  const remainingTime = Math.max(0, targetTime - now); // Ensure it doesn't go below 0
-  timeSecond = Math.ceil(remainingTime / 1000); // Convert to seconds
+  const remainingTime = Math.max(0, targetTime - now);
+  // converts to seconds
+  timeSecond = Math.ceil(remainingTime / 1000);
 
-  // Stop the timer if it reaches 0
+  // what happens when timer reaches 0
   if (timeSecond <= 0) {
-    endCount(); // Handle the end of the countdown
-    return; // Stop further execution
+    endCount(); // function once countdown ends
+    return;
   }
 
-  // Schedule the next step
+  
   setTimeout(step, interval);
 }
 
 function displayTime() {
+  // displayed minutes and seconds in proper format (not exceeding 60)
   const min = Math.floor(timeSecond / 60);
   const sec = Math.floor(timeSecond % 60);
 
-  // Display the timer on the canvas
+  // what is displyed on canvas
   fill(0);
   text(`${min < 10 ? "0" : ""}${min}:${sec < 10 ? "0" : ""}${sec}`, width / 2, height / 1.5);
 }
 
 function endCount() {
-  runningPage = false; // Exit the runningPage
-  endPage = true; // Transition to the endPage
-  countdownActive = false; // Reset the countdown flag
-  cancelCountdown = true; // Stop the countdown loop
-  console.log("Time out");
+  runningPage = false;
+  endPage = true;
+  countdownActive = false;
+  cancelCountdown = true;
+  console.log("Timer completed");
 }
