@@ -8,15 +8,15 @@ let menuButton;
 let exitMenuButton;
 let returnToTitleButton;
 let selectFoodButton;
-let returnToHomePageButton;
+let restartTimerHomeButton;
 
-// let titleBeginButton, startTimerButton,increaseTimerButton, decreaseTimerButton, cancelTimerButton, menuButton, exitMenuButton, returnToTitleButton;
-
-// Timer Variables
-let timeSecond = 600; // Initial countdown time in seconds
-let lastTimeSecond = 600; // Store the last stated timer value
-let countdownActive = false; // Flag to track if the countdown is active
-let countdown; // Variable to store the interval ID
+// ----------------------------------- Timer Variables
+let timeSecond = 600;
+let lastTimeSecond = 600;
+let countdownActive = false;
+const interval = 1000;
+let cancelCountdown = false;
+let targetTime;
 
 // ----------------------------------- Pages
 let titlePage = true;
@@ -25,6 +25,13 @@ let menuPage = false;
 let runningPage = false;
 let endPage = false;
 let foodSelectionPage = false;
+
+// ----------------------------------- Background Image
+let titlePageBG;
+
+function preload() {
+  titlePageBG = loadImage('Media/titlePageBG.png');
+}
 
 // ----------------------------------- Setup
 
@@ -40,17 +47,22 @@ function setup() {
 // ----------------------------------- Draw
 
 function draw() {
-  background(220);
+  if (titlePage) {
+    background(220); // Clear the canvas with a default background color
+    image(titlePageBG, width / 2, height / 2); // Draw the image at the center of the canvas
+  } else {
+    background(220); // Default background for other pages
+  }
 
   if (homePage) {
-    displayTime(lastTimeSecond); // Display the last stated timer value on the home page
+    displayTime(lastTimeSecond);
   }
 
   if (runningPage) {
     if (!countdownActive) {
-      startCountdown(); // Start the countdown when entering the runningPage
+      startCountdown();
     }
-    displayTime(timeSecond); // Display the timer on the canvas
+    displayTime();
   }
 
   pageChanger();
@@ -59,11 +71,10 @@ function draw() {
 // ----------------------------------- Button Functions
 
 function createButtons() {
-
   // BEGIN
   titleBeginButton = createImg('Media/beginButtonImage.png', 'BeginButton');
-  titleBeginButton.position(100, 100);
-  titleBeginButton.size(250, 250);
+  titleBeginButton.position(185, 230);
+  titleBeginButton.size(75, 27);
   titleBeginButton.mouseClicked(() => {
     console.log("entered home page");
     titlePage = false;
@@ -71,24 +82,29 @@ function createButtons() {
   });
 
   // START TIMER
-  startTimerButton = createImg('Media/toast.png', 'StartTimer');
-  startTimerButton.position(160, 300);
-  startTimerButton.size(130, 130);
+  startTimerButton = createImg('Media/startTimerImage.png', 'StartTimer');
+  startTimerButton.position(190, 340);
+  startTimerButton.size(78, 27);
   startTimerButton.mouseClicked(() => {
     runningPage = true;
     homePage = false;
     timeSecond = lastTimeSecond; // Reset the timer to the last stated value
     countdownActive = false; // Reset the countdown flag
+    startCountdown(); // Start the countdown
     console.log(`Timer started with ${timeSecond} seconds`);
   });
 
   // DECREASE TIMER
-  decreaseTimerButton = createImg('Media/cereal.png', 'decreaseTimer');
-  decreaseTimerButton.position(105, 265);
-  decreaseTimerButton.size(70, 70);
+  decreaseTimerButton = createImg('Media/decreaseImage.png', 'decreaseTimer');
+  decreaseTimerButton.position(140, 287);
+  decreaseTimerButton.size(24, 24);
   decreaseTimerButton.mouseClicked(() => {
-    if (lastTimeSecond > 300) { // Ensure the timer doesn't go below 5 minutes
+    console.log("Decrease button clicked");
+    if (lastTimeSecond > 300) {
       lastTimeSecond = Math.max(300, lastTimeSecond - 5 * 60); // Decrease by 5 minutes
+      if (!countdownActive) {
+        timeSecond = lastTimeSecond; // Synchronize timeSecond if the countdown is not active
+      }
       console.log(`Timer decreased: ${lastTimeSecond} seconds`);
     } else {
       console.log("Timer cannot go below 5:00");
@@ -96,9 +112,9 @@ function createButtons() {
   });
 
   // INCREASE TIMER
-  increaseTimerButton = createImg('Media/cereal.png', 'increaseTimer');
-  increaseTimerButton.position(280, 265);
-  increaseTimerButton.size(70, 70);
+  increaseTimerButton = createImg('Media/increaseImage.png', 'increaseTimer');
+  increaseTimerButton.position(285, 287);
+  increaseTimerButton.size(24, 24);
   increaseTimerButton.mouseClicked(() => {
     if (!countdownActive) {
       timeSecond += 5 * 60; // Increase by 5 minutes
@@ -108,28 +124,31 @@ function createButtons() {
   });
 
   // CANCEL TIMER
-  cancelTimerButton = createImg('Media/cereal.png', 'cancelTimer');
-  cancelTimerButton.position(160, 300);
-  cancelTimerButton.size(130, 130);
+  cancelTimerButton = createImg('Media/cancelTimerImage.png', 'cancelTimer');
+  cancelTimerButton.position(190, 320);
+  cancelTimerButton.size(70, 50);
   cancelTimerButton.mouseClicked(() => {
     runningPage = false;
     homePage = true;
-    console.log("timer cancelled");
+    countdownActive = false; // Reset the countdown flag
+    cancelCountdown = true; // Stop the countdown loop
+    timeSecond = lastTimeSecond; // Reset the timer to the last stated value
+    console.log("Timer cancelled and reset");
   });
 
   // MENU BUTTONS
-  menuButton = createImg('Media/cereal.png', 'menu');
-  menuButton.position(10, 10);
-  menuButton.size(70, 70);
+  menuButton = createImg('Media/menuEnterButton.png', 'menu');
+  menuButton.position(15, 15);
+  menuButton.size(24, 24);
   menuButton.mouseClicked(() => {
     console.log("entered menu page");
     homePage = false;
     menuPage = true;
   });
 
-  exitMenuButton = createImg('Media/cereal.png', 'exitMenu');
-  exitMenuButton.position(10, 10);
-  exitMenuButton.size(70, 70);
+  exitMenuButton = createImg('Media/menuExitButton.png', 'exitMenu');
+  exitMenuButton.position(15, 15);
+  exitMenuButton.size(24, 24);
   exitMenuButton.mouseClicked(() => {
     console.log("exited menu page");
     homePage = true;
@@ -137,34 +156,33 @@ function createButtons() {
   });
 
   // MENU OPTION BUTTONS
-  returnToTitleButton = createImg('Media/toast.png', 'returnToTitle');
-  returnToTitleButton.position(100, 20);
-  returnToTitleButton.size(70, 70);
+  returnToTitleButton = createImg('Media/menusHome.png', 'returnToTitle');
+  returnToTitleButton.position(100, 40);
+  returnToTitleButton.size(70, 40);
   returnToTitleButton.mouseClicked(() => {
     console.log("entered title page");
     titlePage = true;
     menuPage = false;
   });
 
-  selectFoodButton = createImg('Media/toast.png', 'selectFood');
+  selectFoodButton = createImg('Media/menusFoods.png', 'selectFood');
   selectFoodButton.position(100, 90);
-  selectFoodButton.size(70, 70);
+  selectFoodButton.size(70, 40);
   selectFoodButton.mouseClicked(() => {
-    console.log("entered title page");
+    console.log("entered food selection page");
     menuPage = false;
     foodSelectionPage = true;
   });
 
   // END PAGE
-  returnToHomePageButton = createImg('Media/toast.png', 'postTimerReturnToHome');
-  returnToHomePageButton.position(160, 300);
-  returnToHomePageButton.size(130, 130);
-  returnToHomePageButton.mouseClicked(() => {
+  restartTimerHomeButton = createImg('Media/toast.png', 'postTimerReturnToHome');
+  restartTimerHomeButton.position(160, 300);
+  restartTimerHomeButton.size(130, 130);
+  restartTimerHomeButton.mouseClicked(() => {
     endPage = false;
     homePage = true;
     console.log("readying to start new timer");
   });
-
 }
 
 function hideAllButtons() {
@@ -177,7 +195,7 @@ function hideAllButtons() {
   exitMenuButton.hide();
   returnToTitleButton.hide();
   selectFoodButton.hide();
-  returnToHomePageButton.hide();
+  restartTimerHomeButton.hide();
 }
 
 // ----------------------------------- Page Changer
@@ -194,6 +212,11 @@ function pageChanger() {
     increaseTimerButton.show();
     decreaseTimerButton.show();
     menuButton.show();
+
+    // Display toast image in the center of the canvas
+    const toastImage = createImg('Media/toast1.png', 'ToastImage');
+    toastImage.position(width / 2 - 64, height / 2 - 64); // Center the image
+    toastImage.size(128, 128); // Set the size of the image
   }
 
   if (runningPage) {
@@ -207,9 +230,8 @@ function pageChanger() {
   }
 
   if (endPage) {
-    returnToHomePageButton.show();
+    restartTimerHomeButton.show();
   }
-
 }
 
 // ----------------------------------- Timer Functions
@@ -217,24 +239,38 @@ function pageChanger() {
 function startCountdown() {
   if (countdownActive) return; // Prevent multiple intervals
   countdownActive = true; // Set the countdown as active
+  cancelCountdown = false; // Ensure the countdown is not canceled
 
-  // Clear any existing interval to prevent overlapping
-  if (countdown) {
-    clearInterval(countdown);
-  }
-
-  countdown = setInterval(() => {
-    timeSecond--;
-    if (timeSecond <= 0) {
-      clearInterval(countdown); // Stop the timer when it reaches 0
-      endCount(); // Handle the end of the countdown
-    }
-  }, 1000);
+  targetTime = Date.now() + timeSecond * 1000; // Calculate the target end time
+  console.log(`Countdown started. Target time: ${new Date(targetTime).toLocaleTimeString()}`);
+  step(); // Start the countdown loop
 }
 
-function displayTime(second) {
-  const min = Math.floor(second / 60);
-  const sec = Math.floor(second % 60);
+function step() {
+  if (cancelCountdown) {
+    console.log("Countdown canceled");
+    cancelCountdown = false; // Reset the flag for future use
+    countdownActive = false; // Reset the countdown flag
+    return; // Stop further execution
+  }
+
+  const now = Date.now();
+  const remainingTime = Math.max(0, targetTime - now); // Ensure it doesn't go below 0
+  timeSecond = Math.ceil(remainingTime / 1000); // Convert to seconds
+
+  // Stop the timer if it reaches 0
+  if (timeSecond <= 0) {
+    endCount(); // Handle the end of the countdown
+    return; // Stop further execution
+  }
+
+  // Schedule the next step
+  setTimeout(step, interval);
+}
+
+function displayTime() {
+  const min = Math.floor(timeSecond / 60);
+  const sec = Math.floor(timeSecond % 60);
 
   // Display the timer on the canvas
   fill(0);
@@ -244,6 +280,7 @@ function displayTime(second) {
 function endCount() {
   runningPage = false; // Exit the runningPage
   endPage = true; // Transition to the endPage
+  countdownActive = false; // Reset the countdown flag
+  cancelCountdown = true; // Stop the countdown loop
   console.log("Time out");
-  clearInterval(countdown); // Ensure the interval is cleared
 }

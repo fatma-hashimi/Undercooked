@@ -4,11 +4,14 @@ DONE -- create title page
 DONE -- create main page
 DONE -- create button to open menu page
 DONE -- create menu page
+DONE -- create functioning countdown timer with -/--/+/++ and start (then a cancel)
 
--- create functioning countdown timer with -/--/+/++ and start (then a cancel)
+-- create foods page to switch to different food and retain this update in main page FOOD SELECTION
 
---
+-- increase/decrease by 10
 
--- create foods page to switch to different food and retain this update in main page
+-- replace assets with refined ones
+-- code animated sequence into timer
+-- code undercooked food when cancelled
 
 -- colorway changes based on click in settings
