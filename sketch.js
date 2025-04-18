@@ -1,14 +1,14 @@
 // ----------------------------------- Button Variables
 let titleBeginButton;
 let startTimerButton;
-let increaseTimerButton;
-let decreaseTimerButton;
+let increaseTimerButton, decreaseTimerButton;
 let cancelTimerButton;
-let menuButton;
-let exitMenuButton;
-let returnToTitleButton;
+let menuButton, exitMenuButton;
+let returnToTitleButton; // menusHome
+let enterFoodSelectionButton; // menusFoods
 let selectFoodButton;
 let restartTimerHomeButton;
+let backFoodButton, nextFoodButton;
 
 // ----------------------------------- Timer Variables
 let timeSecond = 600;
@@ -34,9 +34,17 @@ let foodSelectionPage = false;
 let titlePageBG;
 let framedBG;
 
+// ----------------------------------- Food Variables
+let foodItems = ["toast1.png", "egg1.png"];
+let currentFoodIndex = 0;
+let currentFoodImage;
+let foodImages = [];
+
+// ----------------------------------- Preload
+// preloading only instantly needed images to avoid loading problems
 function preload() {
-  titlePageBG = loadImage('Media/titlePageBG.png'); // Load the title page background
-  framedBG = loadImage('Media/framedBG.png'); // Load the default background for other pages
+  titlePageBG = loadImage('Media/titlePageBG.png');
+  framedBG = loadImage('Media/framedBG.png');
 }
 
 // ----------------------------------- Setup
@@ -49,6 +57,7 @@ function setup() {
   textFont('Helvetica');
 
   createButtons();
+  loadFoodImage(currentFoodIndex);
 }
 
 // ----------------------------------- Draw
@@ -67,8 +76,15 @@ function draw() {
   }
 }
 
-// ----------------------------------- Button Functions
+// ----------------------------------- Load Food Images
+function loadFoodImage(index) {
+  if (!foodImages[index]) {
+    foodImages[index] = loadImage(`Media/${foodItems[index]}`);
+  }
+  currentFoodImage = foodImages[index];
+}
 
+// ----------------------------------- Button Functions
 function createButtons() {
   // BEGIN
   titleBeginButton = createImg('Media/beginButtonImage.png', 'BeginButton');
@@ -87,9 +103,9 @@ function createButtons() {
   startTimerButton.mouseClicked(() => {
     runningPage = true;
     homePage = false;
-    timeSecond = lastTimeSecond; // Reset the timer to the last stated value
-    countdownActive = false; // Reset the countdown flag
-    startCountdown(); // Start the countdown
+    timeSecond = lastTimeSecond;
+    countdownActive = false;
+    startCountdown();
     console.log(`Timer started with ${timeSecond} seconds`);
   });
 
@@ -116,9 +132,9 @@ function createButtons() {
   increaseTimerButton.size(24, 24);
   increaseTimerButton.mouseClicked(() => {
     if (!countdownActive) {
-      timeSecond += 5 * 60; // Increase by 5 minutes
+      timeSecond += 5 * 60;
     }
-    lastTimeSecond += 5 * 60; // Always update the last stated timer value
+    lastTimeSecond += 5 * 60;
     console.log(`Timer increased: ${lastTimeSecond} seconds`);
   });
 
@@ -129,9 +145,9 @@ function createButtons() {
   cancelTimerButton.mouseClicked(() => {
     runningPage = false;
     homePage = true;
-    countdownActive = false; // Reset the countdown flag
-    cancelCountdown = true; // Stop the countdown loop
-    timeSecond = lastTimeSecond; // Reset the timer to the last stated value
+    countdownActive = false;
+    cancelCountdown = true;
+    timeSecond = lastTimeSecond;
     console.log("Timer cancelled and reset");
   });
 
@@ -154,36 +170,53 @@ function createButtons() {
     menuPage = false;
   });
 
-  // MENU OPTION BUTTONS
+  // WITHIN MENU OPTION BUTTONS
   returnToTitleButton = createImg('Media/menusHome.png', 'returnToTitle');
-  returnToTitleButton.position(100, 40);
-  returnToTitleButton.size(70, 40);
+  returnToTitleButton.position(190, 150);
+  returnToTitleButton.size(75, 27);
   returnToTitleButton.mouseClicked(() => {
     console.log("entered title page");
     titlePage = true;
     menuPage = false;
   });
 
-  selectFoodButton = createImg('Media/menusFoods.png', 'selectFood');
-  selectFoodButton.position(100, 90);
-  selectFoodButton.size(70, 40);
-  selectFoodButton.mouseClicked(() => {
+  enterFoodSelectionButton = createImg('Media/menusFoods.png', 'enterFoodSelection');
+  enterFoodSelectionButton.position(190, 200);
+  enterFoodSelectionButton.size(75, 27);
+  enterFoodSelectionButton.mouseClicked(() => {
     console.log("entered food selection page");
     menuPage = false;
     foodSelectionPage = true;
   });
 
-  // END PAGE
-  restartTimerHomeButton = createImg('Media/toast.png', 'postTimerReturnToHome');
-  restartTimerHomeButton.position(160, 300);
-  restartTimerHomeButton.size(130, 130);
-  restartTimerHomeButton.mouseClicked(() => {
-    endPage = false;
-    homePage = true;
-    console.log("readying to start new timer");
+  // BACK FOOD BUTTON
+  backFoodButton = createImg('Media/backFood.png', 'backFood');
+  backFoodButton.position(105, 220);
+  backFoodButton.mouseClicked(() => {
+    currentFoodIndex = (currentFoodIndex - 1 + foodItems.length) % foodItems.length;
+    loadFoodImage(currentFoodIndex);
   });
+
+  // NEXT FOOD BUTTON
+  nextFoodButton = createImg('Media/nextFood.png', 'nextFood');
+  nextFoodButton.position(320, 220);
+  nextFoodButton.mouseClicked(() => {
+    currentFoodIndex = (currentFoodIndex + 1) % foodItems.length;
+    loadFoodImage(currentFoodIndex);
+  });
+
+    // END PAGE
+    restartTimerHomeButton = createImg('Media/toast.png', 'postTimerReturnToHome');
+    restartTimerHomeButton.position(160, 300);
+    restartTimerHomeButton.size(130, 130);
+    restartTimerHomeButton.mouseClicked(() => {
+      endPage = false;
+      homePage = true;
+      console.log("readying to start new timer");
+    });
 }
 
+// ----------------------------------- Hide All Buttons
 function hideAllButtons() {
   titleBeginButton.hide();
   startTimerButton.hide();
@@ -193,8 +226,10 @@ function hideAllButtons() {
   menuButton.hide();
   exitMenuButton.hide();
   returnToTitleButton.hide();
-  selectFoodButton.hide();
+  enterFoodSelectionButton.hide();
   restartTimerHomeButton.hide();
+  backFoodButton.hide();
+  nextFoodButton.hide();
 }
 
 // ----------------------------------- Page Changer
@@ -216,11 +251,17 @@ function pageChanger() {
     increaseTimerButton.show();
     decreaseTimerButton.show();
     menuButton.show();
+  }
 
-    const toastImage = createImg('Media/toast1.png', 'ToastImage');
-    // moving image to center
-    toastImage.position(width / 2 - 64, height / 2 - 128);
-    toastImage.size(128, 128);
+  if (foodSelectionPage) {
+    backFoodButton.show();
+    nextFoodButton.show();
+    enterFoodSelectionButton.hide();
+
+
+    if (currentFoodImage) {
+      image(currentFoodImage, width / 2, height / 2, 128, 128);
+    }
   }
 
   if (runningPage) {
@@ -230,7 +271,7 @@ function pageChanger() {
   if (menuPage) {
     exitMenuButton.show();
     returnToTitleButton.show();
-    selectFoodButton.show();
+    enterFoodSelectionButton.show();
   }
 
   if (endPage) {
@@ -241,50 +282,38 @@ function pageChanger() {
 // ----------------------------------- Timer Functions
 
 function startCountdown() {
-  // needed to prevent multiple countdowns from starting
   if (countdownActive) return;
   countdownActive = true;
   cancelCountdown = false;
 
-  // starts countdown here
-  // using Date.now so that it knows to end when it reaches a certain time using reference as of January 1, 1970 (lol, only way to make it not be frameRate based. since dropping frames means inaccurate intervals)
   targetTime = Date.now() + timeSecond * 1000;
   console.log(`Countdown started. Target time: ${new Date(targetTime).toLocaleTimeString()}`);
-  step(); // !!! function that does more math
+  step();
 }
 
 function step() {
-
-  // if cancel button was pressed and timer doesnt reach 0
   if (cancelCountdown) {
-    console.log("Timer canceled");
     cancelCountdown = false;
     countdownActive = false;
     return;
   }
 
-  // prevents negative countdown
   const now = Date.now();
   const remainingTime = Math.max(0, targetTime - now);
-  // converts to seconds
   timeSecond = Math.ceil(remainingTime / 1000);
 
-  // what happens when timer reaches 0
   if (timeSecond <= 0) {
-    endCount(); // function once countdown ends
+    endCount();
     return;
   }
 
-  
   setTimeout(step, interval);
 }
 
 function displayTime() {
-  // displayed minutes and seconds in proper format (not exceeding 60)
   const min = Math.floor(timeSecond / 60);
   const sec = Math.floor(timeSecond % 60);
 
-  // what is displyed on canvas
   fill(0);
   text(`${min < 10 ? "0" : ""}${min}:${sec < 10 ? "0" : ""}${sec}`, width / 2, height / 1.5);
 }
