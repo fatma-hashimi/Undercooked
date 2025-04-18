@@ -29,16 +29,20 @@ let menuPage = false;
 let runningPage = false;
 let endPage = false;
 let foodSelectionPage = false;
+let undercookedPage = false;
 
 // ----------------------------------- Background Image
 let titlePageBG;
 let framedBG;
 
 // ----------------------------------- Food Variables
-let foodItems = ["toast1.png", "egg1.png"];
+let foodItems = ["toast1.png", "egg1.png", "pancakes1.png"]; // Added pancakes1.png
 let currentFoodIndex = 0;
 let currentFoodImage;
 let foodImages = [];
+
+// ----------------------------------- GIF Variable
+let dubiousFoodGif;
 
 // ----------------------------------- Preload
 // preloading only instantly needed images to avoid loading problems
@@ -55,6 +59,12 @@ function setup() {
   textSize(32);
   textAlign(CENTER, CENTER);
   textFont('Helvetica');
+
+  // Load the GIF
+  dubiousFoodGif = createImg('Media/dubiousFood.gif', 'Dubious Food');
+  dubiousFoodGif.position(150, 150); // Adjust position as needed
+  dubiousFoodGif.size(150, 150); // Adjust size as needed
+  dubiousFoodGif.hide(); // Hide the GIF initially
 
   createButtons();
   loadFoodImage(currentFoodIndex);
@@ -79,7 +89,7 @@ function draw() {
 // ----------------------------------- Load Food Images
 function loadFoodImage(index) {
   if (!foodImages[index]) {
-    foodImages[index] = loadImage(`Media/${foodItems[index]}`);
+    foodImages[index] = loadImage(`Media/${foodItems[index]}`); // Load the image dynamically
   }
   currentFoodImage = foodImages[index];
 }
@@ -155,11 +165,10 @@ function createButtons() {
   cancelTimerButton.size(78, 27);
   cancelTimerButton.mouseClicked(() => {
     runningPage = false;
-    homePage = true;
+    undercookedPage = true; // Transition to the undercookedPage
     countdownActive = false;
     cancelCountdown = true;
-    timeSecond = lastTimeSecond;
-    console.log("Timer cancelled and reset");
+    console.log("Timer cancelled. Transitioned to undercooked page.");
   });
 
   // MENU BUTTONS
@@ -204,27 +213,32 @@ function createButtons() {
   backFoodButton = createImg('Media/backFood.png', 'backFood');
   backFoodButton.position(105, 220);
   backFoodButton.mouseClicked(() => {
-    currentFoodIndex = (currentFoodIndex - 1 + foodItems.length) % foodItems.length;
+    currentFoodIndex = (currentFoodIndex - 1 + foodItems.length) % foodItems.length; // Navigate backward
     loadFoodImage(currentFoodIndex);
+    console.log(`Current food: ${foodItems[currentFoodIndex]}`);
   });
 
   // NEXT FOOD BUTTON
   nextFoodButton = createImg('Media/nextFood.png', 'nextFood');
   nextFoodButton.position(320, 220);
   nextFoodButton.mouseClicked(() => {
-    currentFoodIndex = (currentFoodIndex + 1) % foodItems.length;
+    currentFoodIndex = (currentFoodIndex + 1) % foodItems.length; // Navigate forward
     loadFoodImage(currentFoodIndex);
+    console.log(`Current food: ${foodItems[currentFoodIndex]}`);
   });
 
-    // END PAGE
-    restartTimerHomeButton = createImg('Media/toast.png', 'postTimerReturnToHome');
-    restartTimerHomeButton.position(160, 300);
-    restartTimerHomeButton.size(130, 130);
-    restartTimerHomeButton.mouseClicked(() => {
-      endPage = false;
-      homePage = true;
-      console.log("readying to start new timer");
-    });
+  // END PAGE
+  restartTimerHomeButton = createImg('Media/restartTimerHomeImage.png', 'postTimerReturnToHome');
+  restartTimerHomeButton.position(185, 340);
+  restartTimerHomeButton.size(85, 27);
+  restartTimerHomeButton.mouseClicked(() => {
+    undercookedPage = false; // Exit the undercookedPage
+    homePage = true; // Return to the homePage
+    timeSecond = lastTimeSecond; // Reset the timer to the last set time
+    countdownActive = false; // Ensure the countdown is not active
+    cancelCountdown = false; // Reset the cancel flag
+    console.log("Restarting timer and returning to home page.");
+  });
 }
 
 // ----------------------------------- Hide All Buttons
@@ -264,6 +278,10 @@ function pageChanger() {
     decreaseTimerButton.show();
     menuButton.show();
 
+    // Ensure restartTimerHomeButton and GIF are hidden when on the homePage
+    restartTimerHomeButton.hide();
+    dubiousFoodGif.hide();
+
     if (currentFoodImage) {
       image(currentFoodImage, width / 2, height / 2, 128, 128);
     }
@@ -287,6 +305,16 @@ function pageChanger() {
     exitMenuButton.show();
     returnToTitleButton.show();
     enterFoodSelectionButton.show();
+  }
+
+  if (undercookedPage) {
+    background(225);
+    image(framedBG, width / 2, height / 2);
+    restartTimerHomeButton.show(); // Show the restartTimerHomeButton
+    dubiousFoodGif.show(); // Show the GIF
+    console.log("Undercooked page displayed.");
+  } else {
+    dubiousFoodGif.hide(); // Hide the GIF when not on the undercookedPage
   }
 
   if (endPage) {
