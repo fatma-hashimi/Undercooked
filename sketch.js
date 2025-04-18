@@ -109,6 +109,17 @@ function createButtons() {
     console.log(`Timer started with ${timeSecond} seconds`);
   });
 
+  // SELECT FOOD BUTTON
+  selectFoodButton = createImg('Media/selectFoodImage.png', 'selectFood');
+  selectFoodButton.position(190, 340); // Position the button appropriately
+  selectFoodButton.size(75, 27);
+  selectFoodButton.mouseClicked(() => {
+    console.log(`Selected food: ${foodItems[currentFoodIndex]}`);
+    foodSelectionPage = false;
+    homePage = true;
+    currentFoodImage = foodImages[currentFoodIndex]; // Set the selected image
+  });
+
   // DECREASE TIMER
   decreaseTimerButton = createImg('Media/decreaseImage.png', 'decreaseTimer');
   decreaseTimerButton.position(140, 287);
@@ -227,6 +238,7 @@ function hideAllButtons() {
   exitMenuButton.hide();
   returnToTitleButton.hide();
   enterFoodSelectionButton.hide();
+  selectFoodButton.hide();
   restartTimerHomeButton.hide();
   backFoodButton.hide();
   nextFoodButton.hide();
@@ -251,13 +263,16 @@ function pageChanger() {
     increaseTimerButton.show();
     decreaseTimerButton.show();
     menuButton.show();
+
+    if (currentFoodImage) {
+      image(currentFoodImage, width / 2, height / 2, 128, 128);
+    }
   }
 
   if (foodSelectionPage) {
     backFoodButton.show();
     nextFoodButton.show();
-    enterFoodSelectionButton.hide();
-
+    selectFoodButton.show();
 
     if (currentFoodImage) {
       image(currentFoodImage, width / 2, height / 2, 128, 128);
@@ -282,38 +297,50 @@ function pageChanger() {
 // ----------------------------------- Timer Functions
 
 function startCountdown() {
+  // needed to prevent multiple countdowns from starting
   if (countdownActive) return;
   countdownActive = true;
   cancelCountdown = false;
 
+  // starts countdown here
+  // using Date.now so that it knows to end when it reaches a certain time using reference as of January 1, 1970 (lol, only way to make it not be frameRate based. since dropping frames means inaccurate intervals)
   targetTime = Date.now() + timeSecond * 1000;
   console.log(`Countdown started. Target time: ${new Date(targetTime).toLocaleTimeString()}`);
-  step();
+  step(); // !!! function that does more math
 }
 
 function step() {
+
+  // if cancel button was pressed and timer doesnt reach 0
   if (cancelCountdown) {
+    console.log("Timer canceled");
     cancelCountdown = false;
     countdownActive = false;
     return;
   }
 
+  // prevents negative countdown
   const now = Date.now();
   const remainingTime = Math.max(0, targetTime - now);
+  // converts to seconds
   timeSecond = Math.ceil(remainingTime / 1000);
 
+  // what happens when timer reaches 0
   if (timeSecond <= 0) {
-    endCount();
+    endCount(); // function once countdown ends
     return;
   }
+
 
   setTimeout(step, interval);
 }
 
 function displayTime() {
+  // displayed minutes and seconds in proper format (not exceeding 60)
   const min = Math.floor(timeSecond / 60);
   const sec = Math.floor(timeSecond % 60);
 
+  // what is displyed on canvas
   fill(0);
   text(`${min < 10 ? "0" : ""}${min}:${sec < 10 ? "0" : ""}${sec}`, width / 2, height / 1.5);
 }
