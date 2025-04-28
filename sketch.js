@@ -49,9 +49,15 @@ let foodLoopGifs = {};
 let dubiousFoodGif; 
 let initialAnimationDone = false;
 let animationStartTime;
-let runningMessages = ["Wow food!", "Yummy!"];
+let runningMessages = ["cookin'", "don't burn it", "focus fuels fire", "focus is flavor", "forge ahead", "precision cooking"];
 let currentMessageIndex = -1;
 let nextMessageTime = 0;
+
+let foodDescriptions = {
+  "toast1.png": "Buttered Toast",
+  "egg1.png": "Fried Eggs",
+  "pancakes1.png": "Honey Pancakes"
+};
 
 // ----------------------------------- Preload
 function preload() {
@@ -117,7 +123,7 @@ function setup() {
   imageMode(CENTER);
   textSize(32);
   textAlign(CENTER, CENTER);
-  textFont('Helvetica');
+  textFont('Courier New');
 
   loadGifs();
   createButtons();
@@ -365,7 +371,7 @@ function createButtons() {
 
   // WITHIN MENU OPTION BUTTONS
   returnToTitleButton = createImg('Media/Images-GIFs/menusHome.png', 'returnToTitle');
-  returnToTitleButton.position(190, 150);
+  returnToTitleButton.position(100, 40);
   returnToTitleButton.size(75, 27);
   returnToTitleButton.mouseClicked(() => {
     handleButtonClick(() => {
@@ -381,7 +387,7 @@ function createButtons() {
   });
 
   enterFoodSelectionButton = createImg('Media/Images-GIFs/menusFoods.png', 'enterFoodSelection');
-  enterFoodSelectionButton.position(190, 200);
+  enterFoodSelectionButton.position(100, 80);
   enterFoodSelectionButton.size(75, 27);
   enterFoodSelectionButton.mouseClicked(() => {
     handleButtonClick(() => {
@@ -515,13 +521,17 @@ function createButtons() {
       }
     }
     
+    // Store previous minutes value to detect changes
+    const previousMinutes = Math.floor(lastTimeSecond / 60);
+    
     const newSeconds = newMinutes * 60;
     lastTimeSecond = newSeconds;
     if (!countdownActive) {
       timeSecond = lastTimeSecond;
     }
 
-    if (!isDraggingSlider) {
+    // Play sound when the minute value changes by 5
+    if (newMinutes !== previousMinutes && newMinutes % 5 === 0) {
       if (adjustSound.isPlaying()) {
         adjustSound.stop();
       }
@@ -612,6 +622,9 @@ function pageChanger() {
     if (currentFoodImage) {
       image(currentFoodImage, width / 2, height / 2, 128, 128);
     }
+    
+    // Add this line to display the food description
+    displayFoodDescription();
   }
 
   if (runningPage) {
@@ -629,6 +642,10 @@ function pageChanger() {
     image(framedBG, width / 2, height / 2);
     restartTimerHomeButton.show();
     dubiousFoodGif.show();
+    
+    // Add this line to display the UNDERCOOKED text
+    displayUndercookedText();
+    
     console.log("Undercooked page displayed.");
   } else {
     dubiousFoodGif.hide();
@@ -666,7 +683,7 @@ function displayMinutesBelow(minutes) {
     
     xPosition = pos25 + (progressInRange * (pos30 - pos25) * compressionFactor);
     
-    const adjustmentForAfter30 = (pos30 - (pos25 + (pos30 - pos25) * compressionFactor));
+    // const adjustmentForAfter30 = (pos30 - (pos25 + (pos30 - pos25) * compressionFactor));
   } 
   else if (minutes <= minMinutes) {
     xPosition = sliderMinX;
@@ -708,7 +725,7 @@ function displayMinutesBelow(minutes) {
 }
 
 // ----------------------------------------------------------------------
-// ------------Load Images/GIFs------------------------------------------
+// --------------Load Images/GIFs------------------------------------------
 // ----------------------------------------------------------------------
 const foodAnimations = {
   "toast1.png": {
@@ -929,20 +946,14 @@ function displayTimeWithImages(seconds) {
 function displayRunningMessage() {
   if (currentMessageIndex === -1) return;
 
-  const originalTextSize = textSize();
-  const originalFill = color(0);
-
+  push();
   textSize(24);
-  fill(255, 100, 100);
-  stroke(255);
-  strokeWeight(2);
-
+  textStyle(BOLD);
+  fill(128);
+  stroke(128);
+  strokeWeight(1.5);
   text(runningMessages[currentMessageIndex], width / 2, height / 4);
-
-  textSize(originalTextSize);
-  fill(originalFill);
-  stroke(0);
-  strokeWeight(1);
+  pop();
 }
 
 function setupNextMessage() {
@@ -958,6 +969,35 @@ function setupNextMessage() {
 
   console.log(`Next message "${runningMessages[currentMessageIndex]}" in ${randomDelay} seconds`);
 }
+
+// Add this function after displayRunningMessage() function
+function displayFoodDescription() {
+  const currentFood = foodItems[currentFoodIndex];
+  const description = foodDescriptions[currentFood];
+  
+  if (!description) return;
+  
+  push();
+  textSize(24);
+  textStyle(BOLD);
+  fill(128);
+  stroke(128);
+  strokeWeight(1.5);
+  text(description, width / 2, height / 4);
+  pop();
+}
+
+function displayUndercookedText() {
+  push();
+  textSize(28); // Slightly larger than other messages
+  textStyle(BOLD);
+  fill(255, 0, 0); // Red color for emphasis
+  stroke(128); // Gray outline
+  strokeWeight(2); // Thicker outline for visibility
+  text("UNDERCOOKED", width / 2, height / 4);
+  pop();
+}
+
 // ----------------------------------------------------------------------
 // --------Cooking Animations--------------------------------------------
 // ----------------------------------------------------------------------
