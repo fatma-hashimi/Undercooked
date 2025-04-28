@@ -6,12 +6,27 @@ DONE -- create button to open menu page
 DONE -- create menu page
 DONE -- create functioning countdown timer with -/--/+/++ and start (then a cancel)
 
--- create foods page to switch to different food and retain this update in main page FOOD SELECTION
+DONE -- create foods page to switch to different food and retain this update in main page FOOD SELECTION
 
 -- increase/decrease by 10
 
--- replace assets with refined ones
--- code animated sequence into timer
--- code undercooked food when cancelled
+DONE -- replace assets with refined ones
+!!! -- code animated sequence into timer
+DONE -- code undercooked food when cancelled
++ now edit it to be clearer
+DONE-- user feedback sound related to buttons
 
--- colorway changes based on click in settings
+ehh -- colorway changes based on click in settings
+
+---------------------------------------------------------------
+in notion notes for next two weeks
+
+— add a button for -+10mins to move further
+
+— OR recreate the -+ to be a bar that displays from 5 to 120 minutes like in my earlier concept art and then have the timer as is during runningPage
+
+— draw animated assets for runningPage
+
+— unsure if i can still create the collected data of previous cooked food. scoping problem and the fact that its a p5 sketch right now that refreshes and loses all history constantly
+
+— *decide how to package the software* (ᵕ—ᴗ—) **DESKTOP APP!**
