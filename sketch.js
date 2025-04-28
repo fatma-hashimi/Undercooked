@@ -13,7 +13,7 @@ let restartTimerHomeButton;
 let backFoodButton, nextFoodButton;
 
 // ----------------------------------- Audio Variables
-let adjustSound, deadendSound, cooking01Sound, beginSound, cancelSound;
+let adjustSound, deadendSound, cooking01Sound, beginSound, cancelSound, cookedSound;
 let enterMenuSound, foodsMenuSound, selectedSound, backToTitleSound, exitMenuSound; // menu sounds
 
 // ----------------------------------- Timer Variables
@@ -52,7 +52,6 @@ let animationStartTime;
 let runningMessages = ["cookin'", "don't burn it", "focus fuels fire", "focus is flavor", "forge ahead", "precision cooking"];
 let currentMessageIndex = -1;
 let nextMessageTime = 0;
-
 let foodDescriptions = {
   "toast1.png": "Buttered Toast",
   "egg1.png": "Fried Eggs",
@@ -420,7 +419,6 @@ function createButtons() {
         console.log(`Current food index: ${currentFoodIndex}, name: ${foodItems[currentFoodIndex]}`);
       } else {
         console.error(`Invalid food index: ${currentFoodIndex}`);
-        // Reset to a valid index
         currentFoodIndex = 0;
         loadFoodImage(currentFoodIndex);
       }
@@ -521,7 +519,6 @@ function createButtons() {
       }
     }
     
-    // Store previous minutes value to detect changes
     const previousMinutes = Math.floor(lastTimeSecond / 60);
     
     const newSeconds = newMinutes * 60;
@@ -530,7 +527,6 @@ function createButtons() {
       timeSecond = lastTimeSecond;
     }
 
-    // Play sound when the minute value changes by 5
     if (newMinutes !== previousMinutes && newMinutes % 5 === 0) {
       if (adjustSound.isPlaying()) {
         adjustSound.stop();
@@ -623,7 +619,6 @@ function pageChanger() {
       image(currentFoodImage, width / 2, height / 2, 128, 128);
     }
     
-    // Add this line to display the food description
     displayFoodDescription();
   }
 
@@ -643,7 +638,6 @@ function pageChanger() {
     restartTimerHomeButton.show();
     dubiousFoodGif.show();
     
-    // Add this line to display the UNDERCOOKED text
     displayUndercookedText();
     
     console.log("Undercooked page displayed.");
@@ -653,6 +647,14 @@ function pageChanger() {
 
   if (endPage) {
     restartTimerHomeButton.show();
+    
+    // Display the cooked food image
+    if (currentFoodImage) {
+      image(currentFoodImage, width / 2, height / 2 - 20, 128, 128);
+    }
+    
+    // Display the COOKED! text
+    displayCookedText();
   }
 }
 
@@ -796,6 +798,12 @@ function preloadAudio() {
   cooking01Sound = loadSound('Media/Audio/cooking01Sound.mp3');
   beginSound = loadSound('Media/Audio/beginSound.mp3');
   cancelSound = loadSound('Media/Audio/cancelSound.mp3');
+  
+  // Add cookedSound loading
+  cookedSound = loadSound('Media/Audio/cookedSound.mp3',
+    () => console.log('Loaded cooked sound'),
+    () => console.error('Failed to load cooked sound')
+  );
 }
 
 function setupAudioVolumes() {
@@ -809,7 +817,11 @@ function setupAudioVolumes() {
   cooking01Sound.setVolume(0.3);
   beginSound.setVolume(0.3);
   cancelSound.setVolume(0.3);
+  
+  // Add volume for cookedSound
+  cookedSound.setVolume(0.4);
 }
+
 // ----------------------------------------------------------------------
 // ---------Timer Functions----------------------------------------------
 // ----------------------------------------------------------------------
@@ -874,9 +886,14 @@ function endCount() {
   cancelCountdown = true;
   currentMessageIndex = -1;
 
-  stopCookingAnimation();
+  // Add cookedSound playback
+  if (cookedSound.isPlaying()) {
+    cookedSound.stop();
+  }
+  cookedSound.play();
 
-  console.log("Timer completed");
+  stopCookingAnimation();
+  console.log("Timer completed - Cooked sound played");
 }
 
 function checkTimerState() {
@@ -970,7 +987,6 @@ function setupNextMessage() {
   console.log(`Next message "${runningMessages[currentMessageIndex]}" in ${randomDelay} seconds`);
 }
 
-// Add this function after displayRunningMessage() function
 function displayFoodDescription() {
   const currentFood = foodItems[currentFoodIndex];
   const description = foodDescriptions[currentFood];
@@ -989,12 +1005,24 @@ function displayFoodDescription() {
 
 function displayUndercookedText() {
   push();
-  textSize(28); // Slightly larger than other messages
+  textSize(28);
   textStyle(BOLD);
-  fill(255, 0, 0); // Red color for emphasis
-  stroke(128); // Gray outline
-  strokeWeight(2); // Thicker outline for visibility
-  text("UNDERCOOKED", width / 2, height / 4);
+  fill(0);
+  stroke(0);
+  strokeWeight(2);
+  text("undercooked", width / 2, height / 4);
+  pop();
+}
+
+// Add cooking completion text function
+function displayCookedText() {
+  push();
+  textSize(28);
+  textStyle(BOLD);
+  fill(0, 128, 0); // Green color
+  stroke(0);
+  strokeWeight(2);
+  text("COOKED!", width / 2, height / 4);
   pop();
 }
 
