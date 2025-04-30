@@ -648,12 +648,10 @@ function pageChanger() {
   if (endPage) {
     restartTimerHomeButton.show();
     
-    // Display the cooked food image
     if (currentFoodImage) {
       image(currentFoodImage, width / 2, height / 2 - 20, 128, 128);
     }
     
-    // Display the COOKED! text
     displayCookedText();
   }
 }
@@ -759,7 +757,7 @@ function loadFoodImage(index) {
 
 function loadGifs() {
   dubiousFoodGif = createImg('Media/Images-GIFs/dubiousFood.gif', 'Dubious Food');
-  dubiousFoodGif.position(150, 130);
+  dubiousFoodGif.position(150, 150);
   dubiousFoodGif.size(150, 150);
   dubiousFoodGif.hide();
 
@@ -799,7 +797,6 @@ function preloadAudio() {
   beginSound = loadSound('Media/Audio/beginSound.mp3');
   cancelSound = loadSound('Media/Audio/cancelSound.mp3');
   
-  // Add cookedSound loading
   cookedSound = loadSound('Media/Audio/cookedSound.mp3',
     () => console.log('Loaded cooked sound'),
     () => console.error('Failed to load cooked sound')
@@ -818,7 +815,6 @@ function setupAudioVolumes() {
   beginSound.setVolume(0.3);
   cancelSound.setVolume(0.3);
   
-  // Add volume for cookedSound
   cookedSound.setVolume(0.4);
 }
 
@@ -886,7 +882,6 @@ function endCount() {
   cancelCountdown = true;
   currentMessageIndex = -1;
 
-  // Add cookedSound playback
   if (cookedSound.isPlaying()) {
     cookedSound.stop();
   }
@@ -1014,15 +1009,15 @@ function displayUndercookedText() {
   pop();
 }
 
-// Add cooking completion text function
+
 function displayCookedText() {
   push();
   textSize(28);
   textStyle(BOLD);
-  fill(0, 128, 0); // Green color
-  stroke(0);
+  fill(128);
+  stroke(128);
   strokeWeight(2);
-  text("COOKED!", width / 2, height / 4);
+  text("Perfectly cooked~", width / 2, height / 4);
   pop();
 }
 

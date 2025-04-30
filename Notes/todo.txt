@@ -8,25 +8,15 @@ DONE -- create functioning countdown timer with -/--/+/++ and start (then a canc
 
 DONE -- create foods page to switch to different food and retain this update in main page FOOD SELECTION
 
--- increase/decrease by 10
-
 DONE -- replace assets with refined ones
-!!! -- code animated sequence into timer
+DONE -- code animated sequence into timer
 DONE -- code undercooked food when cancelled
 + now edit it to be clearer
 DONE-- user feedback sound related to buttons
 
-ehh -- colorway changes based on click in settings
+-- dubious food animation
+-- package app :3
 
----------------------------------------------------------------
-in notion notes for next two weeks
+Focus Timer App
 
-— add a button for -+10mins to move further
-
-— OR recreate the -+ to be a bar that displays from 5 to 120 minutes like in my earlier concept art and then have the timer as is during runningPage
-
-— draw animated assets for runningPage
-
-— unsure if i can still create the collected data of previous cooked food. scoping problem and the fact that its a p5 sketch right now that refreshes and loses all history constantly
-
-— *decide how to package the software* (ᵕ—ᴗ—) **DESKTOP APP!**
+Undercooked is a 7-week project to create an app in my Code YourWay class at ITP. It uses the p5 library and was made in Visual Studio Code. Documentation of progress is posted on my blog here between Weeks 7 to 13.
